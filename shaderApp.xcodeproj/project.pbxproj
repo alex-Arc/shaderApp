@@ -27,6 +27,10 @@
 		2194C6961C7DAC7500F62518 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2194C6911C7DAC7500F62518 /* tinyxml.cpp */; };
 		2194C6971C7DAC7500F62518 /* tinyxmlerror.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2194C6931C7DAC7500F62518 /* tinyxmlerror.cpp */; };
 		2194C6981C7DAC7500F62518 /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2194C6941C7DAC7500F62518 /* tinyxmlparser.cpp */; };
+		21D879761C7E514300450EA0 /* ofxFFTBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 21D8796D1C7E514300450EA0 /* ofxFFTBase.cpp */; };
+		21D879771C7E514300450EA0 /* ofxFFTFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 21D8796F1C7E514300450EA0 /* ofxFFTFile.cpp */; };
+		21D879781C7E514300450EA0 /* ofxFFTLive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 21D879711C7E514300450EA0 /* ofxFFTLive.cpp */; };
+		21D879791C7E514300450EA0 /* fft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 21D879741C7E514300450EA0 /* fft.cpp */; };
 		483908258D00B98B4BE69F07 /* ofxLabel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78D67A00EB899FAC09430597 /* ofxLabel.cpp */; };
 		4D508D34156E7076531D9084 /* Syphon.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = D58DCB2C0AEFDE6171E29540 /* Syphon.framework */; };
 		5CBB2AB3A60F65431D7B555D /* ofxButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C88333E71C9457E441C33474 /* ofxButton.cpp */; };
@@ -117,6 +121,14 @@
 		2194C6921C7DAC7500F62518 /* tinyxml.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tinyxml.h; sourceTree = "<group>"; };
 		2194C6931C7DAC7500F62518 /* tinyxmlerror.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlerror.cpp; sourceTree = "<group>"; };
 		2194C6941C7DAC7500F62518 /* tinyxmlparser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxmlparser.cpp; sourceTree = "<group>"; };
+		21D8796D1C7E514300450EA0 /* ofxFFTBase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFFTBase.cpp; sourceTree = "<group>"; };
+		21D8796E1C7E514300450EA0 /* ofxFFTBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxFFTBase.h; sourceTree = "<group>"; };
+		21D8796F1C7E514300450EA0 /* ofxFFTFile.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFFTFile.cpp; sourceTree = "<group>"; };
+		21D879701C7E514300450EA0 /* ofxFFTFile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxFFTFile.h; sourceTree = "<group>"; };
+		21D879711C7E514300450EA0 /* ofxFFTLive.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFFTLive.cpp; sourceTree = "<group>"; };
+		21D879721C7E514300450EA0 /* ofxFFTLive.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxFFTLive.h; sourceTree = "<group>"; };
+		21D879741C7E514300450EA0 /* fft.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = fft.cpp; sourceTree = "<group>"; };
+		21D879751C7E514300450EA0 /* fft.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = fft.h; sourceTree = "<group>"; };
 		2834D88A62CD23F3DE2C47D1 /* ofxButton.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxButton.h; path = ../../../addons/ofxGui/src/ofxButton.h; sourceTree = SOURCE_ROOT; };
 		32D6F27DC6308427F9A278C1 /* ofxSyphonServer.mm */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 30; name = ofxSyphonServer.mm; path = ../../../addons/ofxSyphon/src/ofxSyphonServer.mm; sourceTree = SOURCE_ROOT; };
 		337B812806A0E7D26A029E5A /* ofxSyphonServerDirectory.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxSyphonServerDirectory.h; path = ../../../addons/ofxSyphon/src/ofxSyphonServerDirectory.h; sourceTree = SOURCE_ROOT; };
@@ -336,6 +348,39 @@
 			path = ../../../addons/ofxXmlSettings/libs;
 			sourceTree = "<group>";
 		};
+		21D8796B1C7E514300450EA0 /* ofxFFT */ = {
+			isa = PBXGroup;
+			children = (
+				21D8796C1C7E514300450EA0 /* src */,
+				21D879731C7E514300450EA0 /* libs */,
+			);
+			name = ofxFFT;
+			sourceTree = "<group>";
+		};
+		21D8796C1C7E514300450EA0 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				21D8796D1C7E514300450EA0 /* ofxFFTBase.cpp */,
+				21D8796E1C7E514300450EA0 /* ofxFFTBase.h */,
+				21D8796F1C7E514300450EA0 /* ofxFFTFile.cpp */,
+				21D879701C7E514300450EA0 /* ofxFFTFile.h */,
+				21D879711C7E514300450EA0 /* ofxFFTLive.cpp */,
+				21D879721C7E514300450EA0 /* ofxFFTLive.h */,
+			);
+			name = src;
+			path = ../../../addons/ofxFFT/src;
+			sourceTree = "<group>";
+		};
+		21D879731C7E514300450EA0 /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				21D879741C7E514300450EA0 /* fft.cpp */,
+				21D879751C7E514300450EA0 /* fft.h */,
+			);
+			name = libs;
+			path = ../../../addons/ofxFFT/libs;
+			sourceTree = "<group>";
+		};
 		2317994671CD76BBA16927B8 /* libs */ = {
 			isa = PBXGroup;
 			children = (
@@ -467,6 +512,7 @@
 				2152578B1C7B99F500C0F926 /* ofxParameterMidiSync */,
 				215257901C7B9B2100C0F926 /* ofxMidi */,
 				2194C68C1C7DAC7500F62518 /* ofxXmlSettings */,
+				21D8796B1C7E514300450EA0 /* ofxFFT */,
 			);
 			name = addons;
 			sourceTree = "<group>";
@@ -623,12 +669,16 @@
 				215257871C7B7F6800C0F926 /* ofxJSONElement.cpp in Sources */,
 				215257BF1C7B9B2100C0F926 /* ofxRtMidiIn.cpp in Sources */,
 				215257C41C7B9B2100C0F926 /* ofxMidiMessage.cpp in Sources */,
+				21D879781C7E514300450EA0 /* ofxFFTLive.cpp in Sources */,
 				5CBB2AB3A60F65431D7B555D /* ofxButton.cpp in Sources */,
+				21D879771C7E514300450EA0 /* ofxFFTFile.cpp in Sources */,
 				B266578FC55D23BFEBC042E7 /* ofxGuiGroup.cpp in Sources */,
 				483908258D00B98B4BE69F07 /* ofxLabel.cpp in Sources */,
+				21D879791C7E514300450EA0 /* fft.cpp in Sources */,
 				215257C11C7B9B2100C0F926 /* ofxBaseMidi.cpp in Sources */,
 				F285EB3169F1566CA3D93C20 /* ofxPanel.cpp in Sources */,
 				215257C51C7B9B2100C0F926 /* ofxMidiOut.cpp in Sources */,
+				21D879761C7E514300450EA0 /* ofxFFTBase.cpp in Sources */,
 				215257C21C7B9B2100C0F926 /* ofxMidi.cpp in Sources */,
 				215257C01C7B9B2100C0F926 /* ofxRtMidiOut.cpp in Sources */,
 				837220E80EB56CD44AD27F2A /* ofxSlider.cpp in Sources */,

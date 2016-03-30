@@ -7,6 +7,8 @@
 #include "ofxAutoReloadedShader.h"
 #include "ofxSyphon.h"
 #include "ofxXmlSettings.h"
+#include "ofxFFTLive.h"
+
 class ofApp : public ofBaseApp{
 
 	public:
@@ -25,12 +27,14 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-    
+    vector<float> buffer;
         //ofDirectory dir;
         vector<ofAbstractParameter>abstractParams;
         ofxPanel gui;
         ofxJSONElement json;
     
+    ofxFFTLive fft;
+    ofTexture mTexture;
     ofParameterGroup screenSize;
     ofParameter<int> render_width;
     ofParameter<int> render_height;
@@ -52,6 +56,7 @@ class ofApp : public ofBaseApp{
     vector<ofParameter<bool>>enableBools;
     
     vector<bool>textures;
+    vector<bool>sounds;
     
     ofImage theOnlyTexture;
     

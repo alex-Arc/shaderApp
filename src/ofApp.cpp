@@ -9,7 +9,9 @@ void ofApp::setup(){
     //populate the directory object
     dir.listDir();
     amountOfShaders = dir.size();
+    ofDisableArbTex();
     theOnlyTexture.load("img.png");
+    ofEnableArbTex();
     
     int readWidth = 1000;
     int readHeight = 1000;
@@ -57,6 +59,7 @@ void ofApp::setup(){
         
         bool _b = false;
         textures.push_back(_b);
+        sounds.push_back(_b);
         
         for(int i = 0 ; i<u_strings.size();i++){
             if(ofIsStringInString(u_strings[i],"//tempodivision ")){
@@ -65,14 +68,19 @@ void ofApp::setup(){
                 cout<<tempoDivision[j]<<endl;
             }
             
-            if(ofIsStringInString(u_strings[i]," sampler2D ")){
+            if(ofIsStringInString(u_strings[i]," tex0 ")){
                 vector<string>f_strings = ofSplitString(u_strings[i], " ");
                 textures[j]=true;
                 
             }
+            if(ofIsStringInString(u_strings[i]," sound")){
+                vector<string>f_strings = ofSplitString(u_strings[i], " ");
+                sounds[j]=true;
+                
+            }
             
 
-            if(ofIsStringInString(u_strings[i]," float ")){
+            if(ofIsStringInString(u_strings[i]," float ")&&!ofIsStringInString(u_strings[i]," sound")){
                 vector<string>f_strings = ofSplitString(u_strings[i], ";//");
                 vector<string>f_name =ofSplitString(f_strings[0]," ");
                 
@@ -227,7 +235,7 @@ void ofApp::setup(){
    // gui.loadFromFile("setting.xml");
    // ofAbstractParameter * param;
     
-    
+    fft.setup();
     // ofVec2f v = param->cast<ofVec2f>();
     
 }
@@ -259,7 +267,23 @@ void ofApp::update(){
             minMaxGui[i]=true;
         }
     }
-    
+//    fft.update();
+//    buffer.clear();
+//    buffer = fft.getFftRawData();
+//   // cout <<buffer[0]<<endl;
+//    unsigned char signal[1024];
+//    for (int i = 0; i < 512; i++) {
+//        float scaleFFT = ofMap(i,0,512,0.0,1.0);
+//        scaleFFT *= 255;
+//        signal[i] = (unsigned char) scaleFFT;
+//    }
+//    for (int i = 0; i < buffer.size(); i++) {
+//        signal[i] = (unsigned char) i;
+//        signal[512+i] = (unsigned char) (buffer.at(i)*255);
+//    }
+//    mTexture.loadData(signal, 512, 2, GL_LUMINANCE);
+
+ 
 
 }
 
@@ -289,25 +313,41 @@ void ofApp::draw(){
             
             
             shaders[i]->begin();
+            ofTexture t;
+           // if(textures[i]){
+                t =theOnlyTexture.getTexture();
+                t.generateMipmap();
+                t.setTextureMinMagFilter(GL_NEAREST,GL_NEAREST);
+                t.setTextureWrap(GL_REPEAT,GL_REPEAT);
+                t.bind();
+                
+            //}
+                shaders[i]->setUniform2f("u_resolution", render_width,render_height);
+                shaders[i]->setUniform1f(uniformNamesFloat[i][0], time[i]); //tempo always nr 1
+                
+                for(int j = 1 ; j< uniformNamesFloat[i].size();j++){
+                    shaders[i]->setUniform1f(uniformNamesFloat[i][j],myFloatVec[i][j]);
+                }
+                //cout<<uniformNamesInt[i].size()<<endl;
+                for(int j = 0 ; j< uniformNamesInt[i].size();j++){
+                    shaders[i]->setUniform1f(uniformNamesInt[i][j],myIntVec[i][j]);
+                }
+                for(int j = 0 ; j< uniformNamesBool[i].size();j++){
+                    shaders[i]->setUniform1i(uniformNamesBool[i][j],myBoolVec[i][j]);
+                }
+                
+           // if(textures[i]){
+                t.unbind();
+           // }
+
+             //   shaders[i]->setUniformTexture("tex0",theOnlyTexture,i);
             
-            shaders[i]->setUniform2f("u_resolution", render_width,render_height);
-            shaders[i]->setUniform1f(uniformNamesFloat[i][0], time[i]); //tempo always nr 1
-           
-            for(int j = 1 ; j< uniformNamesFloat[i].size();j++){
-                shaders[i]->setUniform1f(uniformNamesFloat[i][j],myFloatVec[i][j]);
-            }
-            //cout<<uniformNamesInt[i].size()<<endl;
-            for(int j = 0 ; j< uniformNamesInt[i].size();j++){
-                shaders[i]->setUniform1f(uniformNamesInt[i][j],myIntVec[i][j]);
-            }
-            for(int j = 0 ; j< uniformNamesBool[i].size();j++){
-                shaders[i]->setUniform1i(uniformNamesBool[i][j],myBoolVec[i][j]);
-            }
-            
-            if(textures[i]){
-                theOnlyTexture.getTexture().setTextureWrap(GL_REPEAT, GL_REPEAT);
-                shaders[i]->setUniformTexture("tex0",theOnlyTexture,i);
-            }
+//            if(sounds[i]){
+//                mTexture.bind();
+//                shaders[i]->setUniformTexture("sounds",mTexture,i);
+//                shaders[i]->setUniform1f("soundInput",buffer[0]);
+//                mTexture.unbind();
+//            }
             
             ofSetColor(255,255,255);
             ofFill();
