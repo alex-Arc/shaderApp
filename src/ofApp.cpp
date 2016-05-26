@@ -123,7 +123,7 @@ void ofApp::setup(){
                     }
                     shaderUI.uniforms.push_back(uniform);
                 }
-                else if(uniform.type == "vec2"){
+                else if(uniform.type == "vec2" || uniform.type == "vec3"){
                     vector<string>f_uniformVecVals = ofSplitString(f_strings[1], ";");
                     
                     if(f_uniformVecVals.size()>2){ // 3 vecX
@@ -158,7 +158,6 @@ void ofApp::setup(){
                     shaderUI.uniforms.push_back(uniform);
                 }
             }
-            
         }
         
         shaderUI.pGroup.setName(shaderUI.name);
@@ -200,15 +199,13 @@ void ofApp::setup(){
         
         shaderUI.counter = 0;
         
-        ofParameter<bool> enableBool;
-        enableBool.set(shaderUI.name, true);
-        shaderEnables.push_back(enableBool);
+        shaderUI.enabled.set(shaderUI.name, true);
+        shaderUI.isMaximised = false;
         
-        enableGroup.add(shaderEnables.back());
-        shaderUI.enabled = &shaderEnables.back();
+        enableGroup.add( shaderUI.enabled );
         
         shaderUI.fbo.allocate(render_width, render_height);
-        
+
         
         shaderUIs.push_back(shaderUI);
         
@@ -224,19 +221,10 @@ void ofApp::setup(){
     
     for (auto & shaderUI : shaderUIs) {
         paramGroups.add(shaderUI.pGroup);
+        
+        shaderUI.syphonServer.setName(shaderUI.name);
+
     }
-    
-    
-    
-    
-    //        time.push_back(0);
-    //        minMaxGui.push_back(_b);
-    
-    
-    
-    
-    
-    
     
     gui.setup(paramGroups);
     
@@ -244,14 +232,6 @@ void ofApp::setup(){
     ofxGuiGroup * group = dynamic_cast <ofxGuiGroup *>( gui.getControl("enable"));
     if(group){
         group->maximize();
-        
-        
-        // gui.loadFromFile("setting.xml");
-        // ofAbstractParameter * param;
-        
-        //    fft.setup();
-        // ofVec2f v = param->cast<ofVec2f>();
-        
     }
 }
 
@@ -322,7 +302,6 @@ void ofApp::update(){
             
             // publish Syphon
             ofFill(); // 10.9 fix
-            shaderUI.syphonServer.setName(shaderUI.name);
             shaderUI.syphonServer.publishTexture(&shaderUI.fbo.getTexture());
             
         }
@@ -333,24 +312,25 @@ void ofApp::update(){
     ofSetWindowTitle(ofToString(ofGetFrameRate()));
     
     
-    //    for(int i = 0; i<enableBools.size();i++){
-    //
-    //        if(enableBools[i] && minMaxGui[i]){
-    //
-    //            ofxGuiGroup * group = dynamic_cast <ofxGuiGroup *>( gui.getControl(names[i]));
-    //            if(group){
-    //                group->maximize();
-    //            }
-    //            minMaxGui[i]=false;
-    //        }
-    //        if(!enableBools[i] && !minMaxGui[i]){
-    //            ofxGuiGroup * group = dynamic_cast <ofxGuiGroup *>( gui.getControl(names[i]));
-    //            if(group){
-    //                group->minimize();
-    //            }
-    //            minMaxGui[i]=true;
-    //        }
-    //    }
+    // minimize/maximize the running shaderUIs
+    for(auto & shaderUI : shaderUIs){
+        
+        if(shaderUI.enabled && !shaderUI.isMaximised){
+    
+                ofxGuiGroup * group = dynamic_cast <ofxGuiGroup *>( gui.getControl(shaderUI.name));
+                if(group){
+                    group->maximize();
+                }
+                shaderUI.isMaximised=true;
+            }
+        if(!shaderUI.enabled && shaderUI.isMaximised){
+                ofxGuiGroup * group = dynamic_cast <ofxGuiGroup *>( gui.getControl(shaderUI.name));
+                if(group){
+                    group->minimize();
+                }
+                shaderUI.isMaximised=false;
+            }
+        }
     
     //    fft.update();
     //    buffer.clear();

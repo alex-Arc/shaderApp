@@ -34,7 +34,8 @@ class ofApp : public ofBaseApp{
         ofxSyphonServer syphonServer;
         float counter;
         float tempoDivision;
-        ofParameter<bool>* enabled;
+        ofParameter<bool> enabled;
+        bool isMaximised;
     };
     
 	public:
@@ -54,8 +55,6 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
         vector<float> buffer;
-        //ofDirectory dir;
-//        vector<ofAbstractParameter>abstractParams;
     
         ofxPanel gui;
         ofxJSONElement json;
@@ -70,37 +69,15 @@ class ofApp : public ofBaseApp{
     ofParameter<int> render_width;
     ofParameter<int> render_height;
     
-//    vector<ofParameter<float>>floatParams;
-//    vector<ofParameter<int>>intParams;
-//    vector<ofParameter<bool>>boolParams;
-    
-
-    
     ofParameterGroup* guiParamGroup;
     
-//    vector<ofParameter<float>>allFloatParams;
 		
 
     vector<ofParameter<bool>>enableBools;
     
-//    vector<bool>textures;
-//    vector<bool>sounds;
-    
     ofImage theOnlyTexture;
-    
-//    vector< vector<ofParameter<float>> > myFloatVec;
-//    vector< vector<ofParameter<int>> > myIntVec;
-//    vector< vector<ofParameter<bool>> > myBoolVec;
-//    
-//    vector< vector<string> > uniformNamesFloat;
-//    vector< vector<string> > uniformNamesInt;
-//    vector< vector<string> > uniformNamesBool;
 
     vector<ShaderUI> shaderUIs;
-    
-//    vector<vector<SliderVals_float> > floatSliderVals;
-//    vector<vector<SliderVals_int> > intSliderVals;
-//    vector<vector<ofVec2f> > vec2SliderVals;
     
     vector<ofxSyphonServer> syphonServers;
     
