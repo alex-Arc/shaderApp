@@ -32,118 +32,8 @@ void ofApp::setup(){
     xml.popTag();
     
     
-    syphons = new ofxSyphonServer*[dir.size()];
-    renders = new ofFbo*[dir.size()];
-    shaders = new ofxAutoReloadedShader*[dir.size()];
     
-    for(int j = 0 ; j<dir.size();j++){
-        
-        ofBuffer buffer = ofBufferFromFile(dir[j].path());
-        
-        string megaString = buffer.getText();
-        
-        vector<string> subString = ofSplitString(megaString, "//uniforms");
-        //cout<<subString[1]<<endl;
-        vector<string> u_strings = ofSplitString(subString[1], "]"); //vector of each float
-
-        
-        vector<string>ufloats;
-        uniformNamesFloat.push_back(ufloats);
-        uniformNamesInt.push_back(ufloats);
-        uniformNamesBool.push_back(ufloats);
-        
-        vector<ofVec2f> f_vecArray;
-        intSliderVals.push_back(f_vecArray);
-        floatSliderVals.push_back(f_vecArray);
-        tempoDivision.push_back(1);
-        
-        bool _b = false;
-        textures.push_back(_b);
-        sounds.push_back(_b);
-        
-        for(int i = 0 ; i<u_strings.size();i++){
-            if(ofIsStringInString(u_strings[i],"//tempodivision ")){
-                vector<string>f_strings = ofSplitString(u_strings[i], " ");
-                tempoDivision[j]=ofToFloat(f_strings[1]);
-                cout<<tempoDivision[j]<<endl;
-            }
-            
-            if(ofIsStringInString(u_strings[i]," tex0 ")){
-                vector<string>f_strings = ofSplitString(u_strings[i], " ");
-                textures[j]=true;
-                
-            }
-            if(ofIsStringInString(u_strings[i]," sound")){
-                vector<string>f_strings = ofSplitString(u_strings[i], " ");
-                sounds[j]=true;
-                
-            }
-            
-
-            if(ofIsStringInString(u_strings[i]," float ")&&!ofIsStringInString(u_strings[i]," sound")){
-                vector<string>f_strings = ofSplitString(u_strings[i], ";//");
-                vector<string>f_name =ofSplitString(f_strings[0]," ");
-                
-                uniformNamesFloat[j].push_back(f_name[2]);
-                
-                vector<string>f_sliderVals = ofSplitString(f_strings[1], ",");
-                //vector<ofVec2f> f_vecArray;
-                
-                ofVec2f f_vec;
-                f_vec.set(ofToFloat(f_sliderVals[0]), ofToFloat(f_sliderVals[1]));
-                //f_vecArray.push_back(f_vec);
-                
-                floatSliderVals[j].push_back(f_vec);
-            }
-            if(ofIsStringInString(u_strings[i]," int ")){
-                vector<string>i_strings = ofSplitString(u_strings[i], ";//");
-                vector<string>i_name =ofSplitString(i_strings[0]," ");
-                
-                uniformNamesInt[j].push_back(i_name[2]);
-                
-                vector<string>i_sliderVals = ofSplitString(i_strings[1], ",");
-               //vector<ofVec2f> i_vecArray;
-                ofVec2f i_vec;
-                i_vec.set(ofToInt(i_sliderVals[0]), ofToFloat(i_sliderVals[1]));
-               // i_vecArray.push_back(i_vec);
-                intSliderVals[j].push_back(i_vec);            }
-            
-            if(ofIsStringInString(u_strings[i]," bool ")){
-                vector<string>i_strings = ofSplitString(u_strings[i], ";//");
-                vector<string>i_name =ofSplitString(i_strings[0]," ");
-                uniformNamesBool[j].push_back(i_name[2]);
-            }
-        }
-    }
-    
-    
-    
-    ofParameterGroup theGroup;
-    
-    ofParameterGroup enableGroup;
     enableGroup.setName("enable");
-    for(int j = 0; j<dir.size();j++){
-        ofParameter<bool> b;
-        vector<string>temp = ofSplitString(dir.getPath(j), ".");
-        vector<string>name =ofSplitString(temp[0], "/");
-        b.set(name[1],true);
-        enableBools.push_back(b);
-        enableGroup.add(enableBools[j]);
-        names.push_back(name[1]);
-        
-        
-        //load shaders
-        shaders[j] = new ofxAutoReloadedShader;
-        vector<string>tempO = ofSplitString(dir.getPath(j), ".");
-        shaders[j]->load(tempO[0]);
-       
-        
-    }
-    
-    
-    theGroup.add(enableGroup);
-
-  
     
     screenSize.setName("Screen Size");
     screenSize.add(render_width.set("render_width",readWidth,10,3000));
@@ -152,290 +42,421 @@ void ofApp::setup(){
     render_width = readWidth;
     render_height = readHeight;
     
-    theGroup.add(screenSize);
-    //set up gui and parameters
-    for(int j = 0; j<dir.size();j++){
-        
-        vector<ofParameter<float>>paraF;
-        vector<ofParameter<int>>paraI;
-        vector<ofParameter<bool>>paraB;
-        myFloatVec.push_back(paraF);
-        myIntVec.push_back(paraI);
-        myBoolVec.push_back(paraB);
+    for(int j = 0 ; j<dir.size();j++){
         
         
-        ofParameterGroup paraGroup;
-        paraGroup.setName(names[j]); //get shader name from jsonObject[j]
+        vector<string>temp = ofSplitString(dir.getPath(j), ".");
+        vector<string>name =ofSplitString(temp[0], "/");
         
-        for(int i = 0; i<uniformNamesFloat[j].size();i++){ //get num float uniforms from json
-            ofParameter<float>para;
-            para.set(uniformNamesFloat[j][i], floatSliderVals[j][i].x, floatSliderVals[j][i].x, floatSliderVals[j][i].y); //get setupvalues: name, from-too.
-            floatParams.push_back(para);
-            //allFloatParams.push_back(para);
-        }
-        myFloatVec[j]=floatParams;
+        //load shaders
+        ofxAutoReloadedShader shader;
+        vector<string>tempO = ofSplitString(dir.getPath(j), ".");
         
-        if(uniformNamesInt[j].size()>0){
-        for(int i = 0; i<uniformNamesInt[j].size();i++){
-            ofParameter<int>para;
-            para.set(uniformNamesInt[j][i],intSliderVals[j][i].x, intSliderVals[j][i].x, intSliderVals[j][i].y);
-            intParams.push_back(para);
-        }
+        ShaderUI shaderUI;
+        shaderUI.name = name[1];
+        shaderUI.shader.load(tempO[0]);
+        
+        ofBuffer buffer = ofBufferFromFile(dir[j].path());
+        
+        string megaString = buffer.getText();
+        
+        vector<string> subString = ofSplitString(megaString, "//uniforms");
+        //cout<<subString[1]<<endl;
+        vector<string> u_strings = ofSplitString(subString[1], "]"); //vector of each uniform
+        
+        
+        // Read the uniforms
+        
+        for(int i = 0 ; i<u_strings.size();i++){
             
-        myIntVec[j]=intParams;
+            if(ofIsStringInString(u_strings[i],"\n\n")){
+                // cought emty lines
+                
+            }else if(ofIsStringInString(u_strings[i],"//tempodivision ")){
+                vector<string>f_strings = ofSplitString(u_strings[i], " ");
+                shaderUI.tempoDivision=ofToFloat(f_strings[1]);
+                
+            }else if(ofIsStringInString(u_strings[i]," tex0 ")){
+                vector<string>f_strings = ofSplitString(u_strings[i], " ");
+                //                textures[j]=true;
+                
+            }else if(ofIsStringInString(u_strings[i]," sound")){
+                vector<string>f_strings = ofSplitString(u_strings[i], " ");
+                //                sounds[j]=true;
+                
+            }else{
+                vector<string>f_strings = ofSplitString(u_strings[i], ";//");
+                vector<string>f_name =ofSplitString(f_strings[0]," ");
+                
+                UniformVals uniform;
+                uniform.name = f_name[2];
+                
+                if(ofIsStringInString(u_strings[i]," float ")) uniform.type = "float";
+                if(ofIsStringInString(u_strings[i]," int ")) uniform.type = "int";
+                if(ofIsStringInString(u_strings[i]," bool ")) uniform.type = "bool";
+                if(ofIsStringInString(u_strings[i]," vec2 ")) uniform.type = "vec2";
+                if(ofIsStringInString(u_strings[i]," vec3 ")) uniform.type = "vec3";
+                
+                if(uniform.type == "float" || uniform.type == "int" || uniform.type == "bool"){
+                    
+                    vector<string>f_uniformVals = ofSplitString(f_strings[1], ",");
+                    
+                    if(f_uniformVals.size()>2){
+                        uniform.start = ofToFloat(f_uniformVals[0]);
+                        uniform.min = ofToFloat(f_uniformVals[1]);
+                        uniform.max = ofToFloat(f_uniformVals[2]);
+                        
+                    }else if(f_uniformVals.size()>1){
+                        uniform.min = ofToFloat(f_uniformVals[0]);
+                        uniform.max = ofToFloat(f_uniformVals[1]);
+                        uniform.start = uniform.min;
+                        
+                        
+                    }else if(f_uniformVals.size()>0){
+                        uniform.min = ofToFloat(f_uniformVals[0]);
+                        uniform.max = uniform.min;
+                        uniform.start = uniform.min;
+                    }else{
+                        uniform.start = 1;
+                        uniform.min = 1;
+                        uniform.max = 1;
+                    }
+                    shaderUI.uniforms.push_back(uniform);
+                }
+                else if(uniform.type == "vec2"){
+                    vector<string>f_uniformVecVals = ofSplitString(f_strings[1], ";");
+                    
+                    if(f_uniformVecVals.size()>2){ // 3 vecX
+                        vector<string>f_uniformVecComp1 = ofSplitString(f_strings[0], ",");
+                        vector<string>f_uniformVecComp2 = ofSplitString(f_strings[1], ",");
+                        vector<string>f_uniformVecComp3 = ofSplitString(f_strings[2], ",");
+                        if(f_uniformVecComp1.size()>2){ // vec3
+                            uniform.vecStart = ofVec3f(ofToFloat(f_uniformVecComp1[0]), ofToFloat(f_uniformVecComp1[1]),ofToFloat(f_uniformVecComp1[2]) );
+                            uniform.vecMin = ofVec3f(ofToFloat(f_uniformVecComp2[0]), ofToFloat(f_uniformVecComp2[1]),ofToFloat(f_uniformVecComp2[2]) );
+                            uniform.vecMax = ofVec3f(ofToFloat(f_uniformVecComp3[0]), ofToFloat(f_uniformVecComp3[1]),ofToFloat(f_uniformVecComp3[2]) );
+                            
+                        } else if(f_uniformVecComp1.size()>1){ // vec2
+                            uniform.vecStart = ofVec3f(ofToFloat(f_uniformVecComp1[0]), ofToFloat(f_uniformVecComp1[1]), 0. );
+                            uniform.vecMin = ofVec3f(ofToFloat(f_uniformVecComp2[0]), ofToFloat(f_uniformVecComp2[1]),0. );
+                            uniform.vecMax = ofVec3f(ofToFloat(f_uniformVecComp3[0]), ofToFloat(f_uniformVecComp3[1]),0. );
+                        }
+                        if(f_uniformVecVals.size()>1){ // 2 vecX
+                            vector<string>f_uniformVecComp1 = ofSplitString(f_strings[0], ",");
+                            vector<string>f_uniformVecComp2 = ofSplitString(f_strings[1], ",");
+                            vector<string>f_uniformVecComp3 = ofSplitString(f_strings[2], ",");
+                            if(f_uniformVecComp1.size()>2){ // vec3
+                                uniform.vecMin = ofVec3f(ofToFloat(f_uniformVecComp2[0]), ofToFloat(f_uniformVecComp2[1]),ofToFloat(f_uniformVecComp2[2]) );
+                                uniform.vecMax = ofVec3f(ofToFloat(f_uniformVecComp3[0]), ofToFloat(f_uniformVecComp3[1]),ofToFloat(f_uniformVecComp3[2]) );
+                                
+                            } else if(f_uniformVecComp1.size()>1){ // vec2
+                                uniform.vecStart = ofVec3f(ofToFloat(f_uniformVecComp1[0]), ofToFloat(f_uniformVecComp1[1]), 0. );
+                                uniform.vecMin = ofVec3f(ofToFloat(f_uniformVecComp2[0]), ofToFloat(f_uniformVecComp2[1]),0. );
+                            }
+                            uniform.vecStart = uniform.vecMin;
+                        }
+                    }
+                    shaderUI.uniforms.push_back(uniform);
+                }
+            }
+            
         }
-        for(int i = 0; i<uniformNamesBool[j].size();i++){
-            ofParameter<bool>para;
-            para.set(uniformNamesBool[j][i], true);
-            boolParams.push_back(para);
+        
+        shaderUI.pGroup.setName(shaderUI.name);
+        
+        int f = 0;
+        int i = 0;
+        int b = 0;
+        
+        // create the GUI
+        
+        for(auto & uniform : shaderUI.uniforms){
+            
+            if(uniform.type == "float"){
+                ofParameter<float> p;
+                p.set(uniform.name, uniform.start, uniform.min, uniform.max);
+                shaderUI.myFloatSliders.push_back(p);
+                uniform.index = f;
+                f++;
+                shaderUI.pGroup.add(shaderUI.myFloatSliders.back());
+                
+            }else if(uniform.type == "int"){
+                ofParameter<int> p;
+                p.set(uniform.name, uniform.start, uniform.min, uniform.max);
+                shaderUI.myIntSliders.push_back(p);
+                uniform.index = i;
+                i++;
+                shaderUI.pGroup.add(shaderUI.myIntSliders.back());
+                
+            }else if(uniform.type == "bool"){
+                ofParameter<bool> p;
+                p.set(uniform.name, uniform.start, uniform.min, uniform.max);
+                shaderUI.myBoolSliders.push_back(p);
+                uniform.index = b;
+                b++;
+                shaderUI.pGroup.add(shaderUI.myBoolSliders.back());
+            }
+            
         }
-        myBoolVec[j]=boolParams;
         
-        for(int i = 0; i<floatParams.size();i++){
-            paraGroup.add(floatParams[i]);
-        }
-        for(int i = 0; i<intParams.size();i++){
-            paraGroup.add(intParams[i]);
-        }
-        for(int i = 0; i<boolParams.size();i++){
-            paraGroup.add(boolParams[i]);
-        }
-        floatParams.clear();
-        boolParams.clear();
-        intParams.clear();
+        shaderUI.counter = 0;
+        
+        ofParameter<bool> enableBool;
+        enableBool.set(shaderUI.name, true);
+        shaderEnables.push_back(enableBool);
+        
+        enableGroup.add(shaderEnables.back());
+        shaderUI.enabled = &shaderEnables.back();
+        
+        shaderUI.fbo.allocate(render_width, render_height);
         
         
-        theGroup.add(paraGroup);
+        shaderUIs.push_back(shaderUI);
         
-        cout<<myFloatVec.size()<<endl;
-        
-        
-        renders[j] = new ofFbo;
-        renders[j]->allocate(render_width, render_height);
-        syphons[j] = new ofxSyphonServer;
-        syphons[j]->setName(names[j]);
-        
-        
-        time.push_back(0);
-        bool _b = enableBools[j];
-        minMaxGui.push_back(_b);
-       
-        
+        //        shaderUIs.back().syphonServer.setName(shaderUI.name);
     }
     
- 
-    gui.setup(theGroup);
+    
+    
+    ofParameterGroup paramGroups;
+    
+    paramGroups.add(screenSize);
+    paramGroups.add(enableGroup);
+    
+    for (auto & shaderUI : shaderUIs) {
+        paramGroups.add(shaderUI.pGroup);
+    }
+    
+    
+    
+    
+    //        time.push_back(0);
+    //        minMaxGui.push_back(_b);
+    
+    
+    
+    
+    
+    
+    
+    gui.setup(paramGroups);
     
     gui.minimizeAll();
     ofxGuiGroup * group = dynamic_cast <ofxGuiGroup *>( gui.getControl("enable"));
     if(group){
         group->maximize();
+        
+        
+        // gui.loadFromFile("setting.xml");
+        // ofAbstractParameter * param;
+        
+        //    fft.setup();
+        // ofVec2f v = param->cast<ofVec2f>();
+        
     }
-    
-   // gui.loadFromFile("setting.xml");
-   // ofAbstractParameter * param;
-    
-    fft.setup();
-    // ofVec2f v = param->cast<ofVec2f>();
-    
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    for (int i = 0 ; i<time.size(); i++) {
-        time[i] += myFloatVec[i][0]/tempoDivision[i];
+    for (auto & shaderUI : shaderUIs) {
+        shaderUI.counter += shaderUI.myFloatSliders[0]/shaderUI.tempoDivision;
+        
+        if(shaderUI.enabled){
+            
+            shaderUI.fbo.begin();
+            {
+                glClearColor(0.0, 0.0, 0.0, 0.0);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                
+                shaderUI.shader.begin();
+                {
+                    //                    ofTexture t;
+                    //                    // if(textures[i]){
+                    //                    t =theOnlyTexture.getTexture();
+                    //                    t.generateMipmap();
+                    //                    t.setTextureMinMagFilter(GL_NEAREST,GL_NEAREST);
+                    //                    t.setTextureWrap(GL_REPEAT,GL_REPEAT);
+                    //                    t.bind();
+                    
+                    //}
+                    
+                    for(auto & uniform : shaderUI.uniforms){
+                        
+                        string uniformName = uniform.name;
+                        int index = uniform.index;
+                        
+                        if(uniformName == "u_resolution"){
+                            shaderUI.shader.setUniform2f("u_resolution", shaderUI.fbo.getWidth(), shaderUI.fbo.getHeight());
+                            
+                        }else if(uniformName == "u_time"){
+                            shaderUI.shader.setUniform1f("u_time", shaderUI.counter); //tempo always nr 1
+                            
+                        }else if(uniform.type == "float"){
+                            shaderUI.shader.setUniform1f(uniformName, shaderUI.myFloatSliders[index]);
+                        }else if(uniform.type == "int"){
+                            shaderUI.shader.setUniform1i(uniformName, shaderUI.myIntSliders[index]);
+                        }else if(uniform.type == "bool"){
+                            shaderUI.shader.setUniform1i(uniformName, shaderUI.myBoolSliders[index]);
+                        }
+                    }
+                    
+                    // if(textures[i]){
+                    //                    t.unbind();
+                    // }
+                    
+                    //   shaders[i]->setUniformTexture("tex0",theOnlyTexture,i);
+                    
+                    //            if(sounds[i]){
+                    //                mTexture.bind();
+                    //                shaders[i]->setUniformTexture("sounds",mTexture,i);
+                    //                shaders[i]->setUniform1f("soundInput",buffer[0]);
+                    //                mTexture.unbind();
+                    //            }
+                    
+                    ofSetColor(255,255,255);
+                    ofFill();
+                    ofDrawRectangle(0, 0, shaderUI.fbo.getWidth(), shaderUI.fbo.getHeight());
+                }
+                shaderUI.shader.end();
+            }
+            shaderUI.fbo.end();
+            
+            // publish Syphon
+            ofFill(); // 10.9 fix
+            shaderUI.syphonServer.setName(shaderUI.name);
+            shaderUI.syphonServer.publishTexture(&shaderUI.fbo.getTexture());
+            
+        }
+        
+        
         
     }
     ofSetWindowTitle(ofToString(ofGetFrameRate()));
     
     
-    for(int i = 0; i<enableBools.size();i++){
-        
-        if(enableBools[i] && minMaxGui[i]){
-            
-            ofxGuiGroup * group = dynamic_cast <ofxGuiGroup *>( gui.getControl(names[i]));
-            if(group){
-                group->maximize();
-            }
-            minMaxGui[i]=false;
-        }
-        if(!enableBools[i] && !minMaxGui[i]){
-            ofxGuiGroup * group = dynamic_cast <ofxGuiGroup *>( gui.getControl(names[i]));
-            if(group){
-                group->minimize();
-            }
-            minMaxGui[i]=true;
-        }
-    }
-//    fft.update();
-//    buffer.clear();
-//    buffer = fft.getFftRawData();
-//   // cout <<buffer[0]<<endl;
-//    unsigned char signal[1024];
-//    for (int i = 0; i < 512; i++) {
-//        float scaleFFT = ofMap(i,0,512,0.0,1.0);
-//        scaleFFT *= 255;
-//        signal[i] = (unsigned char) scaleFFT;
-//    }
-//    for (int i = 0; i < buffer.size(); i++) {
-//        signal[i] = (unsigned char) i;
-//        signal[512+i] = (unsigned char) (buffer.at(i)*255);
-//    }
-//    mTexture.loadData(signal, 512, 2, GL_LUMINANCE);
-
- 
-
+    //    for(int i = 0; i<enableBools.size();i++){
+    //
+    //        if(enableBools[i] && minMaxGui[i]){
+    //
+    //            ofxGuiGroup * group = dynamic_cast <ofxGuiGroup *>( gui.getControl(names[i]));
+    //            if(group){
+    //                group->maximize();
+    //            }
+    //            minMaxGui[i]=false;
+    //        }
+    //        if(!enableBools[i] && !minMaxGui[i]){
+    //            ofxGuiGroup * group = dynamic_cast <ofxGuiGroup *>( gui.getControl(names[i]));
+    //            if(group){
+    //                group->minimize();
+    //            }
+    //            minMaxGui[i]=true;
+    //        }
+    //    }
+    
+    //    fft.update();
+    //    buffer.clear();
+    //    buffer = fft.getFftRawData();
+    //   // cout <<buffer[0]<<endl;
+    //    unsigned char signal[1024];
+    //    for (int i = 0; i < 512; i++) {
+    //        float scaleFFT = ofMap(i,0,512,0.0,1.0);
+    //        scaleFFT *= 255;
+    //        signal[i] = (unsigned char) scaleFFT;
+    //    }
+    //    for (int i = 0; i < buffer.size(); i++) {
+    //        signal[i] = (unsigned char) i;
+    //        signal[512+i] = (unsigned char) (buffer.at(i)*255);
+    //    }
+    //    mTexture.loadData(signal, 512, 2, GL_LUMINANCE);
+    
+    
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     
     ofBackground(0);
-    //cout <<myFloatVec[0].size()<<endl;
     
-
-
+    
+    
     gui.draw();
+    
+    // draw previews
     ofPushMatrix();
-    for(int i = 0; i<enableBools.size();i++){
-        
-        if(enableBools[i]){
-            
-            renders[i]->begin();
-            glClearColor(0.0, 0.0, 0.0, 0.0);
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            
-            ofSetColor(0);
-            ofFill();
-            ofDrawRectangle(0, 0, renders[i]->getWidth(), renders[i]->getHeight());
-            // }
-            
-            
-            
-            shaders[i]->begin();
-            ofTexture t;
-           // if(textures[i]){
-                t =theOnlyTexture.getTexture();
-                t.generateMipmap();
-                t.setTextureMinMagFilter(GL_NEAREST,GL_NEAREST);
-                t.setTextureWrap(GL_REPEAT,GL_REPEAT);
-                t.bind();
-                
-            //}
-                shaders[i]->setUniform2f("u_resolution", render_width,render_height);
-                shaders[i]->setUniform1f(uniformNamesFloat[i][0], time[i]); //tempo always nr 1
-                
-                for(int j = 1 ; j< uniformNamesFloat[i].size();j++){
-                    shaders[i]->setUniform1f(uniformNamesFloat[i][j],myFloatVec[i][j]);
-                }
-                //cout<<uniformNamesInt[i].size()<<endl;
-                for(int j = 0 ; j< uniformNamesInt[i].size();j++){
-                    shaders[i]->setUniform1f(uniformNamesInt[i][j],myIntVec[i][j]);
-                }
-                for(int j = 0 ; j< uniformNamesBool[i].size();j++){
-                    shaders[i]->setUniform1i(uniformNamesBool[i][j],myBoolVec[i][j]);
-                }
-                
-           // if(textures[i]){
-                t.unbind();
-           // }
-
-             //   shaders[i]->setUniformTexture("tex0",theOnlyTexture,i);
-            
-//            if(sounds[i]){
-//                mTexture.bind();
-//                shaders[i]->setUniformTexture("sounds",mTexture,i);
-//                shaders[i]->setUniform1f("soundInput",buffer[0]);
-//                mTexture.unbind();
-//            }
-            
-            ofSetColor(255,255,255);
-            ofFill();
-            ofDrawRectangle(0, 0, renders[i]->getWidth(), renders[i]->getHeight());
-            
-            
-            shaders[i]->end();
-            
-            renders[i]->end();
-            
+    for (auto & shaderUI : shaderUIs) {
+        if(shaderUI.enabled){
             
             ofFill();
             ofSetColor(255);
-            
-            renders[i]->draw(250, 0, render_width/5, render_height/5);
+            shaderUI.fbo.draw(250, 0, render_width/5, render_height/5);
+            // draw frame
             ofNoFill();
             ofSetColor(255,0,0);
             ofSetLineWidth(1);
             ofDrawRectangle(250, 0, render_width/5, render_height/5);
-            
             ofTranslate(0, render_height/5+20);
         }
     }
     ofPopMatrix();
-    
-    for(int i = 0;i<amountOfShaders;i++){
-        ofFill(); // 10.9 fix
-        syphons[i]->publishTexture(&renders[i]->getTexture());
-    }
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     
-
+    
     if(key == 'l') {
         gui.loadFromFile("settings.xml");
         
     }
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseEntered(int x, int y){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseExited(int x, int y){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
-
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::gotMessage(ofMessage msg){
-
+    
 }
 
 //--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
-
+void ofApp::dragEvent(ofDragInfo dragInfo){
+    
 }

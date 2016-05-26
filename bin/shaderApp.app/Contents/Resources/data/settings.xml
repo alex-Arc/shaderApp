@@ -9,6 +9,7 @@
 		<whiteCloud>1</whiteCloud>
 	<soap>1</soap>
 	<perlinWorms>1</perlinWorms>
+	<equirectangularNoise>1</equirectangularNoise>
 	</enable>
 	<Screen_Size>
 		<render_width>376</render_width>
@@ -35,11 +36,11 @@
 		<enableCircle>1</enableCircle>
 	</cloud>
 	<drops>
-		<u_time>0.168878</u_time>
-		<u_colorsThres>1.04694</u_colorsThres>
-	<u_contrast>1.40816</u_contrast>
+		<u_time>0.15051</u_time>
+		<u_colorsThres>0.573469</u_colorsThres>
+	<u_contrast>1.12245</u_contrast>
 		<u_inverse>1</u_inverse>
-	<u_waveSize>0.979592</u_waveSize>
+	<u_waveSize>0.658163</u_waveSize>
 	</drops>
 	<hairy>
 		<u_time>0.122449</u_time>
@@ -85,4 +86,23 @@
 		<u_linesX>0</u_linesX>
 		<u_linesY>0</u_linesY>
 	</perlinWorms>
+<equirectangularNoise>
+		<u_time>0.443878</u_time>
+		<u_frequency>1.9898</u_frequency>
+		<u_amplitude>0.586735</u_amplitude>
+		<u_lacunarity>1.18367</u_lacunarity>
+		<u_persistence>0.8</u_persistence>
+		<u_ridgeOffset>0.331633</u_ridgeOffset>
+		<u_warp>0.25</u_warp>
+		<u_warp0>0.15</u_warp0>
+		<u_damp>0.8</u_damp>
+		<u_damp0>1</u_damp0>
+		<u_damp_scale>1</u_damp_scale>
+		<u_contrast>1</u_contrast>
+		<u_type>1</u_type>
+		<u_subtype>0</u_subtype>
+		<u_octaves>1</u_octaves>
+		<u_bwSwitch>1</u_bwSwitch>
+		<u_bgTransparent>1</u_bgTransparent>
+	</equirectangularNoise>
 </group>

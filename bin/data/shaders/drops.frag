@@ -7,10 +7,11 @@ precision mediump float;
 //uniforms
 //tempodivision 10]
 uniform vec2 u_resolution;//100,1000;100,1000]
-uniform float u_time;//.1,1.]
-uniform float u_colorsThres;//.1,3.]
-uniform float u_contrast;//0,2]
-uniform float u_waveSize;//0,3]
+uniform float u_time;//0.15,.1,1.]
+uniform int u_numDrops;//36,0,100]
+uniform float u_colorsThres;//0.6,.1,3.]
+uniform float u_contrast;//1.2,0.,2.]
+uniform float u_waveSize;//0.7,0.,3.]
 uniform bool u_inverse;//]
 
 //uniforms
@@ -42,7 +43,7 @@ void main()
     float time = u_time;
     
     float waves = 0.;
-    for (float i = 0.; i < 36.; i++) {
+    for (float i = 0.; i < float(u_numDrops); i++) {
         float delay = (rand(i*2.42)*2.)+1.;
         float time2 = time+(rand(i)*6.12);
         float fracttime = fract(time2/delay);
