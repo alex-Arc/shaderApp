@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofUtils.h"
 #include "ofxGui.h"
+#include "ofxParameterMidiSync.h"
 #include "ofxJSONElement.h"
 #include "ofxAutoReloadedShader.h"
 #include "ofxSyphon.h"
